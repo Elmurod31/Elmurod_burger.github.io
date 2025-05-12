@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Food Menu</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fff;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .item {
+      text-align: center;
+    }
+
+    .item img {
+      width: 80px;
+      height: 80px;
+    }
+
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .add-btn {
+      background-color: #ffb300;
+      color: white;
+    }
+
+    .counter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .counter .btn {
+      background-color: #f44336;
+      color: white;
+      padding: 6px 10px;
+    }
+
+    .counter .btn.plus {
+      background-color: #ff9800;
+    }
+
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: orange;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+
+    .view-order {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background-color: #28a745;
+      color: white;
+      font-size: 18px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu" id="menu"></div>
+
+  <div class="view-order" id="viewOrderBtn">VIEW ORDER</div>
+
+  <script>
+    const items = [
+      { name: "Cake", price: 1, img: "🍰" },
+      { name: "Burger", price: 4.99, img: "🍔" },
+      { name: "Fries", price: 1.49, img: "🍟" },
+      { name: "Hotdog", price: 3.49, img: "🌭" },
+      { name: "Taco", price: 3.99, img: "🌮" },
+      { name: "Pizza", price: 7.99, img: "🍕" },
+      { name: "Donut", price: 1.49, img: "🍩" },
+      { name: "Popcorn", price: 1.99, img: "🍿" },
+      { name: "Coke", price: 1.49, img: "🥤" },
+      { name: "Icecream", price: 5.99, img: "🍦" },
+      { name: "Cookie", price: 3.99, img: "🍪" },
+      { name: "Flan", price: 7.99, img: "🍮" },
+    ];
+
+    const menu = document.getElementById('menu');
+    const viewOrderBtn = document.getElementById('viewOrderBtn');
+    const state = {};
+
+    function renderMenu() {
+      menu.innerHTML = '';
+      items.forEach((item, index) => {
+        const count = state[item.name] || 0;
+
+        const itemEl = document.createElement('div');
+        itemEl.className = 'item';
+
+        itemEl.innerHTML = `
+          <div style="position:relative;">
+            <div style="font-size:50px">${item.img}</div>
+            ${count > 0 ? `<div class="badge">${count}</div>` : ''}
+          </div>
+          <div>${item.name} · <strong>$${item.price}</strong></div>
+          <div class="controls">
+            ${count === 0 ? `
+              <button class="btn add-btn" onclick="addItem('${item.name}')">ADD</button>
+            ` : `
+              <div class="counter">
+                <button class="btn minus" onclick="removeItem('${item.name}')">−</button>
+                <span>${count}</span>
+                <button class="btn plus" onclick="addItem('${item.name}')">+</button>
+              </div>
+            `}
+          </div>
+        `;
+
+        menu.appendChild(itemEl);
+      });
+
+      // Show "VIEW ORDER" if any item is added
+      const hasItems = Object.values(state).some(c => c > 0);
+      viewOrderBtn.style.display = hasItems ? 'block' : 'none';
+    }
+
+    function addItem(name) {
+      state[name] = (state[name] || 0) + 1;
+      renderMenu();
+    }
+
+    function removeItem(name) {
+      if (state[name]) {
+        state[name]--;
+        if (state[name] === 0) delete state[name];
+        renderMenu();
+      }
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
